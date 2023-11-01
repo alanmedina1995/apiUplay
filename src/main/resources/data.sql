@@ -1,17 +1,21 @@
-DROP TABLE IF EXISTS USUARIOS;
+DROP TABLE IF EXISTS users;
 
-create table USUARIOS
+create table users
 (
-    ID       INTEGER auto_increment
+    id       INTEGER auto_increment
         primary key,
-    USERNAME CHARACTER VARYING(255) not null,
-    PASSWORD CHARACTER VARYING(255) not null,
-    NAME     CHARACTER VARYING(255) not null,
-    LASTNAME CHARACTER VARYING(255) not null,
-    ADMIN    BOOLEAN                not null
+    username CHARACTER VARYING(255) not null,
+    password CHARACTER VARYING(255) not null,
+    name     CHARACTER VARYING(255) not null,
+    lastname CHARACTER VARYING(255) not null,
+    admin    BOOLEAN                not null
 );
 
-INSERT INTO USUARIOS ( USERNAME, PASSWORD, NAME, LASTNAME, ADMIN ) VALUES ( 'alanmedina1995@gmail.com.ar', 'admin1234', 'Alan', 'Medina', true );
-INSERT INTO USUARIOS ( USERNAME, PASSWORD, NAME, LASTNAME, ADMIN ) VALUES ( 'zapatajulian79@gmail.com', 'admin1234', 'Julian', 'Zapata', true );
-INSERT INTO USUARIOS ( USERNAME, PASSWORD, NAME, LASTNAME, ADMIN ) VALUES ( 'magiaunicornio42@gmail.com', 'user1234', 'Magia', 'Unicornio', false);
-INSERT INTO USUARIOS ( USERNAME, PASSWORD, NAME, LASTNAME, ADMIN ) VALUES ( 'dragónvolador87@hotmail.com', 'user1234', 'Dragón', 'Volador', false );
+INSERT INTO users (username, password, name, lastname, admin)
+VALUES ('alanmedina1995@gmail.com.ar', 'admin1234', 'Alan', 'Medina', true);
+INSERT INTO users (username, password, name, lastname, admin)
+VALUES ('zapatajulian79@gmail.com', 'admin1234', 'Julian', 'Zapata', true);
+INSERT INTO users (username, password, name, lastname, admin)
+VALUES ('magiaunicornio42@gmail.com', 'user1234', 'Magia', 'Unicornio', false);
+INSERT INTO users (username, password, name, lastname, admin)
+VALUES ('dragónvolador87@hotmail.com', 'user1234', 'Dragón', 'Volador', false);

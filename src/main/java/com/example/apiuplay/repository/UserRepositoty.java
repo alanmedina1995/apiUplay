@@ -4,8 +4,8 @@ import com.example.apiuplay.models.User;
 import com.example.apiuplay.models.UserDTO;
 import org.springframework.data.repository.CrudRepository;
 
-public interface UserRepositoty<usuario> extends CrudRepository<usuario, Long> {
-    UserDTO findByUsername(String username);
+public interface UserRepositoty extends CrudRepository<User, Long> {
+    User findByUsername(String username);
 
-    UserDTO save(User user);
+    User save(User user);
 }

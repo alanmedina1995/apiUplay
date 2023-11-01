@@ -3,14 +3,22 @@ package com.example.apiuplay.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column (name = "id")
     private  Long id;
+    @Column (name = "username")
     private String username;
+    @Column (name = "password")
     private String password;
+    @Column (name = "name")
     private String name;
+    @Column (name = "lastname")
+    private String lastname;
+    @Column (name = "admin")
+    private boolean admin;
 
     public User(String username, String password, String name, String lastname) {
         this.username = username;
@@ -22,7 +30,6 @@ public class User {
 
     public User() {
     }
-    private String lastname;
 
     public Long getId() {
         return id;
@@ -72,5 +79,4 @@ public class User {
         this.admin = admin;
     }
 
-    private boolean admin;
 }
