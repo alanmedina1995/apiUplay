@@ -7,18 +7,13 @@ import jakarta.persistence.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name = "id")
-    private  Long id;
-    @Column (name = "username")
+    private Long id;
     private String username;
-    @Column (name = "password")
     private String password;
-    @Column (name = "name")
     private String name;
-    @Column (name = "lastname")
     private String lastname;
-    @Column (name = "admin")
     private boolean admin;
+    private int utncoin;
 
     public User(String username, String password, String name, String lastname) {
         this.username = username;
@@ -26,6 +21,7 @@ public class User {
         this.name = name;
         this.lastname = lastname;
         this.admin = false;
+        this.utncoin = 25;
     }
 
     public User() {
@@ -77,6 +73,14 @@ public class User {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public int getUtncoin() {
+        return utncoin;
+    }
+
+    public void setUtncoin(int utncoin) {
+        this.utncoin = utncoin;
     }
 
 }

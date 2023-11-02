@@ -5,6 +5,7 @@ public class UserDTO {
     private String password;
     private String name;
     private String lastname;
+    private int utncoin;
 
     public UserDTO() {
 
@@ -40,5 +41,13 @@ public class UserDTO {
 
     public String getLastname() {
         return lastname;
+    }
+
+    public int getUtncoin() {
+        return utncoin;
+    }
+
+    public void setUtncoin(int utncoin) {
+        this.utncoin = utncoin;
     }
 }

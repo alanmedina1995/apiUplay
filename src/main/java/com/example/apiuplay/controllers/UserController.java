@@ -3,6 +3,7 @@ package com.example.apiuplay.controllers;
 import com.example.apiuplay.models.User;
 import com.example.apiuplay.models.UserDTO;
 import com.example.apiuplay.services.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(value = "/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -20,22 +21,30 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
+    @PostMapping(value = "/register")
     public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
-        User savedUser = userService.saveUser(userDTO); // Guarda el usuario en el repositorio
+        HttpHeaders headers = new HttpHeaders();
+        User savedUser = userService.saveUser(userDTO);// Guarda el usuario en el repositorio
+        if (savedUser == null) {
+            headers.add("Header", "FAIL");
+            return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
+        }
+        headers.add("Header", "OK");
         UserDTO userResponse = userService.convertToUserDTO(savedUser);
-        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
-
+        return new ResponseEntity<>(userResponse, headers, HttpStatus.OK);
     }
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login")
     public ResponseEntity<Boolean> login(@RequestBody UserDTO userDTO) {
         User findUser = userService.findByUsername(userDTO.getUsername());
+        HttpHeaders headers = new HttpHeaders();
 
         if (findUser != null && findUser.getPassword().equals(userDTO.getPassword())) {
-            return new ResponseEntity<>(HttpStatus.OK);
+            headers.add("Header", "OK");
+            return new ResponseEntity<>(headers, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        headers.add("Header", "FAIL");
+        return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
 
 }
