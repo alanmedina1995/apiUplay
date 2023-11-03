@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users
 );
 
 INSERT INTO users (username, password, name, lastname, admin, utncoin)
-VALUES ('alanmedina1995@gmail.com.ar', 'admin1234', 'Alan', 'Medina', true, 0);
+VALUES ('alanmedina1995@gmail.com', 'admin1234', 'Alan', 'Medina', true, 0);
 
 INSERT INTO users (username, password, name, lastname, admin, utncoin)
 VALUES ('zapatajulian79@gmail.com', 'admin1234', 'Julian', 'Zapata', true, 0);

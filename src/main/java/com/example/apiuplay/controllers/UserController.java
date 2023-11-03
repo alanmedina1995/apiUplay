@@ -35,13 +35,14 @@ public class UserController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<Boolean> login(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO) {
         User findUser = userService.findByUsername(userDTO.getUsername());
         HttpHeaders headers = new HttpHeaders();
 
         if (findUser != null && findUser.getPassword().equals(userDTO.getPassword())) {
             headers.add("Header", "OK");
-            return new ResponseEntity<>(headers, HttpStatus.OK);
+            UserDTO response = userService.convertToUserDTO(findUser);
+            return new ResponseEntity<>(response, headers, HttpStatus.OK);
         }
         headers.add("Header", "FAIL");
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
