@@ -1,5 +1,4 @@
-CREATE TABLE IF NOT EXISTS users
-(
+CREATE TABLE IF NOT EXISTS users(
     id       INT auto_increment primary key,
     username VARCHAR(255) not null,
     password VARCHAR(255) not null,
@@ -7,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users
     lastname VARCHAR(255) not null,
     admin    BOOLEAN      not null,
     utncoin  INT          not null
-);
+    );
 
 INSERT INTO users (username, password, name, lastname, admin, utncoin)
 VALUES ('alanmedina1995@gmail.com', 'admin1234', 'Alan', 'Medina', true, 0);
