@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping(value = "/api/users")
@@ -48,5 +52,37 @@ public class UserController {
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
 
-}
+    @PutMapping(value = "/update-coin-balance/{userId}")
+    public ResponseEntity<String> updateCoinBalance(
+            @PathVariable Long userId,
+            @RequestParam int newCoinBalance
+    ) {
+        HttpHeaders headers = new HttpHeaders();
+        User updatedUser = userService.updateCoinBalance(userId, newCoinBalance);
+
+        if (updatedUser != null) {
+            headers.add("Header", "OK");
+            return new ResponseEntity<>(headers, HttpStatus.OK);
+        } else {
+            headers.add("Header", "FAIL");
+            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value = "/coin-balance/{userId}")
+    public ResponseEntity<Integer> getCoinBalance(@PathVariable Long userId) {
+        HttpHeaders headers = new HttpHeaders();
+        int coinBalance = userService.getCoinBalance(userId);
+
+        if (coinBalance >= 0) {
+            headers.add("Header", "OK");
+            return new ResponseEntity<>(coinBalance, headers, HttpStatus.OK);
+        } else {
+            headers.add("Header", "FAIL");
+            return new ResponseEntity<>(coinBalance, headers, HttpStatus.NOT_FOUND);
+        }
+    }
+    }
+
+
 

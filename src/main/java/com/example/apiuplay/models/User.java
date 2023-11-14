@@ -15,7 +15,8 @@ public class User {
     private boolean admin;
     private int utncoin;
 
-    public User(String username, String password, String name, String lastname) {
+    public User(Long id, String username, String password, String name, String lastname) {
+        this.id=id;
         this.username = username;
         this.password = password;
         this.name = name;
