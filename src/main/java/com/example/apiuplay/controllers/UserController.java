@@ -41,6 +41,9 @@ public class UserController {
     @PostMapping(value = "/login")
     public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO) {
         User findUser = userService.findByUsername(userDTO.getUsername());
+        if(ObjectUtils.isEmpty(findUser)){
+            findUser = userService.findByEmail(userDTO.getUsername());
+        }
         HttpHeaders headers = new HttpHeaders();
 
         if (findUser != null && findUser.getPassword().equals(userDTO.getPassword())) {
@@ -99,7 +102,7 @@ public class UserController {
     @PutMapping("/modifyPassword")
     public ResponseEntity<UserDTO> modifyPassword(@RequestBody UserModifyPasswordDTO userModifyPasswordDTO) {
         HttpHeaders headers = new HttpHeaders();
-        User existingUser = userService.findById(userModifyPasswordDTO.getUserId());
+        User existingUser = userService.findByEmail(userModifyPasswordDTO.getEmail());
         if (ObjectUtils.isNotEmpty(existingUser)) {
             User updatedUser = userService.modifyPassword(userModifyPasswordDTO, existingUser);
             return getUserDTOResponseEntity(headers, updatedUser);
