@@ -41,6 +41,9 @@ public class UserController {
     @PostMapping(value = "/login")
     public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO) {
         User findUser = userService.findByUsername(userDTO.getUsername());
+        if(ObjectUtils.isEmpty(findUser)){
+            findUser = userService.findByEmail(userDTO.getUsername());
+        }
         HttpHeaders headers = new HttpHeaders();
 
         if (findUser != null && findUser.getPassword().equals(userDTO.getPassword())) {
