@@ -44,13 +44,13 @@ public class UserService {
 
         User saveUser = new User();
         saveUser.setId(user.getId());
-        saveUser.setUsername(ObjectUtils.isNotEmpty(userDTO.getUsername()) ? userDTO.getUsername() : user.getUsername());
+        saveUser.setUserName(ObjectUtils.isNotEmpty(userDTO.getUsername()) ? userDTO.getUsername() : user.getUserName());
         saveUser.setEmail(ObjectUtils.isNotEmpty(userDTO.getEmail()) ? userDTO.getEmail() : user.getEmail());
         saveUser.setPassword(ObjectUtils.isNotEmpty(userDTO.getPassword()) ? userDTO.getPassword() : user.getPassword());
         saveUser.setName(ObjectUtils.isNotEmpty(userDTO.getName()) ? userDTO.getName() : user.getName());
-        saveUser.setLastname(ObjectUtils.isNotEmpty(userDTO.getLastname()) ? userDTO.getLastname() : user.getLastname());
-        saveUser.setPhonenumber(ObjectUtils.isNotEmpty(userDTO.getPhonenumber()) ? userDTO.getPhonenumber() : user.getPhonenumber());
-        saveUser.setUtncoin(user.getUtncoin());
+        saveUser.setLastName(ObjectUtils.isNotEmpty(userDTO.getLastname()) ? userDTO.getLastname() : user.getLastName());
+        saveUser.setPhoneNumber(ObjectUtils.isNotEmpty(userDTO.getPhonenumber()) ? userDTO.getPhonenumber() : user.getPhoneNumber());
+        saveUser.setUtnCoin(user.getUtnCoin());
 
         return userRepository.save(saveUser);
     }
@@ -58,22 +58,22 @@ public class UserService {
     public UserDTO getBasicDataUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUsername());
+        userDTO.setUsername(user.getUserName());
         userDTO.setName(user.getName());
-        userDTO.setLastname(user.getLastname());
-        userDTO.setUtncoin(user.getUtncoin());
+        userDTO.setLastname(user.getLastName());
+        userDTO.setUtncoin(user.getUtnCoin());
         return userDTO;
     }
 
     public UserDTO getFullDataUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUsername());
+        userDTO.setUsername(user.getUserName());
         userDTO.setEmail(user.getEmail());
         userDTO.setName(user.getName());
-        userDTO.setLastname(user.getLastname());
-        userDTO.setPhonenumber(user.getPhonenumber());
-        userDTO.setUtncoin(user.getUtncoin());
+        userDTO.setLastname(user.getLastName());
+        userDTO.setPhonenumber(user.getPhoneNumber());
+        userDTO.setUtncoin(user.getUtnCoin());
         return userDTO;
     }
 
@@ -88,7 +88,7 @@ public class UserService {
     }
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUserName(username);
     }
 
     public User findByEmail(String email) {
@@ -102,7 +102,7 @@ public class UserService {
     public User updateCoinBalance(Long userId, int newCoinBalance) {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
-            user.setUtncoin(newCoinBalance);
+            user.setUtnCoin(newCoinBalance);
             return userRepository.save(user);
         }
         return null;
@@ -110,7 +110,7 @@ public class UserService {
 
     public int getCoinBalance(Long userId) {
         User user = userRepository.findById(userId).orElse(null);
-        return (user != null) ? user.getUtncoin() : -1;
+        return (user != null) ? user.getUtnCoin() : -1;
     }
 
 }

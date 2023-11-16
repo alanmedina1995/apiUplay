@@ -12,35 +12,27 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String username;
+    @Column(name = "user_name")
+    private String userName;
     private String email;
     private String password;
     private String name;
-    private String lastname;
-    private String phonenumber;
-    private int utncoin;
+    @Column(name = "last_name")
+    private String lastName;
+    @Column(name = "phone_number")
+    private String phoneNumber;
+    @Column(name = "utn_coin")
+    private int utnCoin;
 
-    public User(String username, String email, String password,
-                String name, String lastname, String phonenumber) {
-        this.username = username;
+    public User(String userName, String email, String password,
+                String name, String lastName, String phoneNumber) {
+        this.userName = userName;
         this.email = email;
         this.password = password;
         this.name = name;
-        this.lastname = lastname;
-        this.phonenumber = phonenumber;
-        this.utncoin = 25;
-    }
-
-    public User(Long id, String username, String email, String password,
-                String name, String lastname, String phonenumber) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.lastname = lastname;
-        this.phonenumber = phonenumber;
-        this.utncoin = 25;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.utnCoin = 25;
     }
 
     public User() {
