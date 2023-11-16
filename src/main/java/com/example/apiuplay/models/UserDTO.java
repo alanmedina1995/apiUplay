@@ -4,9 +4,12 @@ public class UserDTO {
 
     private Long id;
     private String username;
+    private String email;
+
     private String password;
     private String name;
     private String lastname;
+    private String phonenumber;
     private int utncoin;
 
     public UserDTO() {
@@ -15,10 +18,6 @@ public class UserDTO {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public void setName(String name) {
@@ -33,9 +32,6 @@ public class UserDTO {
         return username;
     }
 
-    public String getPassword() {
-        return password;
-    }
 
     public String getName() {
         return name;
@@ -59,5 +55,29 @@ public class UserDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
     }
 }

@@ -9,19 +9,21 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
+    private String email;
     private String password;
     private String name;
     private String lastname;
-    private boolean admin;
+    private String phonenumber;
     private int utncoin;
 
-    public User(Long id, String username, String password, String name, String lastname) {
-        this.id=id;
+    public User(String username, String email, String password,
+                String name, String lastname, String phonenumber) {
         this.username = username;
+        this.email = email;
         this.password = password;
         this.name = name;
         this.lastname = lastname;
-        this.admin = false;
+        this.phonenumber = phonenumber;
         this.utncoin = 25;
     }
 
@@ -68,14 +70,6 @@ public class User {
         this.lastname = lastname;
     }
 
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
-
     public int getUtncoin() {
         return utncoin;
     }
@@ -84,4 +78,19 @@ public class User {
         this.utncoin = utncoin;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(String phoneNumber) {
+        this.phonenumber = phoneNumber;
+    }
 }
