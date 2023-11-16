@@ -1,7 +1,13 @@
 package com.example.apiuplay.services;
 
-import com.example.apiuplay.models.User;
-import com.example.apiuplay.models.UserDTO;
+import com.example.apiuplay.models.entities.Question;
+import com.example.apiuplay.models.entities.QuestionXUser;
+import com.example.apiuplay.models.entities.User;
+import com.example.apiuplay.models.views.UserDTO;
+import com.example.apiuplay.models.views.UserModifyPasswordDTO;
+import com.example.apiuplay.models.views.UserRegistrationDTO;
+import com.example.apiuplay.repository.QuestionRepository;
+import com.example.apiuplay.repository.QuestionXUserRepository;
 import com.example.apiuplay.repository.UserRepository;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
@@ -11,18 +17,25 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final QuestionRepository questionRepository;
+    private final QuestionXUserRepository questionXUserRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, QuestionRepository questionRepository, QuestionXUserRepository questionXUserRepository) {
         this.userRepository = userRepository;
+        this.questionRepository = questionRepository;
+        this.questionXUserRepository = questionXUserRepository;
     }
 
-    public User createUser(@NotNull UserDTO userDTO) {
-        User isExistUsername = this.findByUsername(userDTO.getUsername());
-        User isExistEmail = this.findByEmail(userDTO.getEmail());
+    public User createUser(@NotNull UserRegistrationDTO userRegistrationDTO) {
+        User isExistUsername = this.findByUsername(userRegistrationDTO.getUserName());
+        User isExistEmail = this.findByEmail(userRegistrationDTO.getEmail());
         if (isExistUsername == null && isExistEmail == null) {
-            User user = new User(userDTO.getUsername(), userDTO.getEmail(), userDTO.getPassword(),
-                    userDTO.getName(), userDTO.getLastname(), userDTO.getPhonenumber());
-            return userRepository.save(user);
+            User saveUser = new User(userRegistrationDTO.getUserName(), userRegistrationDTO.getEmail(), userRegistrationDTO.getPassword(),
+                    userRegistrationDTO.getName(), userRegistrationDTO.getLastName(), userRegistrationDTO.getPhoneNumber());
+            User existsUser = userRepository.save(saveUser);
+            Question selectedQuestion = questionRepository.findById(userRegistrationDTO.getQuestionId()).orElse(null);
+            QuestionXUser saveQuestionXUser = questionXUserRepository.save(new QuestionXUser(existsUser, selectedQuestion, userRegistrationDTO.getAnswer()));
+            return saveUser;
         }
         return null;
     }
@@ -64,6 +77,16 @@ public class UserService {
         return userDTO;
     }
 
+    public User modifyPassword(UserModifyPasswordDTO userModifyPasswordDTO, User user) {
+        QuestionXUser questionXUser = questionXUserRepository.findByUserId(user.getId());
+        if (ObjectUtils.isNotEmpty(questionXUser) && questionXUser.getAnswer().equalsIgnoreCase(userModifyPasswordDTO.getAnswer())) {
+            user.setPassword(userModifyPasswordDTO.getNewPassword());
+            return userRepository.save(user);
+        } else {
+            return null;
+        }
+    }
+
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -89,6 +112,5 @@ public class UserService {
         User user = userRepository.findById(userId).orElse(null);
         return (user != null) ? user.getUtncoin() : -1;
     }
-
 
 }

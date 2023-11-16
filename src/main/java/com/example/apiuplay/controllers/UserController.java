@@ -1,9 +1,13 @@
 package com.example.apiuplay.controllers;
 
-import com.example.apiuplay.models.User;
-import com.example.apiuplay.models.UserDTO;
+import com.example.apiuplay.models.entities.User;
+import com.example.apiuplay.models.views.UserModifyPasswordDTO;
+import com.example.apiuplay.models.views.UserDTO;
+import com.example.apiuplay.models.views.UserRegistrationDTO;
 import com.example.apiuplay.services.ResendService;
 import com.example.apiuplay.services.UserService;
+import org.apache.commons.lang3.ObjectUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +25,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> registerUser(@RequestBody UserRegistrationDTO userRegistrationDTO) {
         HttpHeaders headers = new HttpHeaders();
-        User savedUser = userService.createUser(userDTO);// Guarda el usuario en el repositorio
+        User savedUser = userService.createUser(userRegistrationDTO);// Guarda el usuario en el repositorio
         if (savedUser == null) {
             headers.add("Header", "FAIL");
             return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
@@ -85,12 +89,35 @@ public class UserController {
         User existingUser = userService.findById(id);
         if (existingUser != null) {
             User savedUser = userService.saveUser(updatedUser, existingUser);
+            return getUserDTOResponseEntity(headers, savedUser);
+        } else {
+            headers.add("Header", "FAIL");
+            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/modifyPassword")
+    public ResponseEntity<UserDTO> modifyPassword(@RequestBody UserModifyPasswordDTO userModifyPasswordDTO) {
+        HttpHeaders headers = new HttpHeaders();
+        User existingUser = userService.findById(userModifyPasswordDTO.getUserId());
+        if (ObjectUtils.isNotEmpty(existingUser)) {
+            User updatedUser = userService.modifyPassword(userModifyPasswordDTO, existingUser);
+            return getUserDTOResponseEntity(headers, updatedUser);
+        } else {
+            headers.add("Header", "FAIL");
+            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @NotNull
+    private ResponseEntity<UserDTO> getUserDTOResponseEntity(HttpHeaders headers, User savedUser) {
+        if (ObjectUtils.isNotEmpty(savedUser)) {
             UserDTO userResponse = userService.getBasicDataUserDTO(savedUser);
             headers.add("Header", "OK");
             return new ResponseEntity<>(userResponse, headers, HttpStatus.OK);
         } else {
             headers.add("Header", "FAIL");
-            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
         }
     }
 }
