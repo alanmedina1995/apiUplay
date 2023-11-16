@@ -102,7 +102,7 @@ public class UserController {
     @PutMapping("/modifyPassword")
     public ResponseEntity<UserDTO> modifyPassword(@RequestBody UserModifyPasswordDTO userModifyPasswordDTO) {
         HttpHeaders headers = new HttpHeaders();
-        User existingUser = userService.findById(userModifyPasswordDTO.getUserId());
+        User existingUser = userService.findByEmail(userModifyPasswordDTO.getEmail());
         if (ObjectUtils.isNotEmpty(existingUser)) {
             User updatedUser = userService.modifyPassword(userModifyPasswordDTO, existingUser);
             return getUserDTOResponseEntity(headers, updatedUser);
