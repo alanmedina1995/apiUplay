@@ -23,7 +23,7 @@ public class UserController {
     @PostMapping(value = "/register")
     public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
         HttpHeaders headers = new HttpHeaders();
-        User savedUser = userService.saveUser(userDTO);// Guarda el usuario en el repositorio
+        User savedUser = userService.createUser(userDTO);// Guarda el usuario en el repositorio
         if (savedUser == null) {
             headers.add("Header", "FAIL");
             return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
@@ -76,6 +76,21 @@ public class UserController {
         } else {
             headers.add("Header", "FAIL");
             return new ResponseEntity<>(coinBalance, headers, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/update-user/{id}")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO updatedUser) {
+        HttpHeaders headers = new HttpHeaders();
+        User existingUser = userService.findById(id);
+        if (existingUser != null) {
+            User savedUser = userService.saveUser(updatedUser, existingUser);
+            UserDTO userResponse = userService.getBasicDataUserDTO(savedUser);
+            headers.add("Header", "OK");
+            return new ResponseEntity<>(userResponse, headers, HttpStatus.OK);
+        } else {
+            headers.add("Header", "FAIL");
+            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }
     }
 }

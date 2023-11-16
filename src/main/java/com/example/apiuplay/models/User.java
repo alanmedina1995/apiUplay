@@ -27,6 +27,18 @@ public class User {
         this.utncoin = 25;
     }
 
+    public User(Long id, String username, String email, String password,
+                String name, String lastname, String phonenumber) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.lastname = lastname;
+        this.phonenumber = phonenumber;
+        this.utncoin = 25;
+    }
+
     public User() {
     }
 
