@@ -18,13 +18,14 @@ public class UserService {
     public User saveUser(@NotNull UserDTO userDTO) {
         User isExist = this.findByUsername(userDTO.getUsername());
         if (isExist == null) {
-            User user = new User(userDTO.getId(), userDTO.getUsername(), userDTO.getPassword(), userDTO.getName(), userDTO.getLastname());
+            User user = new User(userDTO.getUsername(), userDTO.getEmail(), userDTO.getPassword(),
+                    userDTO.getName(), userDTO.getLastname(), userDTO.getPhonenumber());
             return userRepository.save(user);
         }
         return null;
     }
 
-    public UserDTO convertToUserDTO(User user) {
+    public UserDTO getBasicDataUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
@@ -34,8 +35,24 @@ public class UserService {
         return userDTO;
     }
 
+    public UserDTO getFullDataUserDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setName(user.getName());
+        userDTO.setLastname(user.getLastname());
+        userDTO.setPhonenumber(user.getPhonenumber());
+        userDTO.setUtncoin(user.getUtncoin());
+        return userDTO;
+    }
+
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     public User updateCoinBalance(Long userId, int newCoinBalance) {
