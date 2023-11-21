@@ -1,5 +1,6 @@
 package com.example.apiuplay.controllers;
 
+import com.example.apiuplay.services.JwtService;
 import com.example.apiuplay.models.entities.User;
 import com.example.apiuplay.models.views.UserModifyPasswordDTO;
 import com.example.apiuplay.models.views.UserDTO;
@@ -12,6 +13,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/users")
@@ -39,9 +43,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody UserDTO userDTO) {
         User findUser = userService.findByUsername(userDTO.getUsername());
-        if(ObjectUtils.isEmpty(findUser)){
+        if (ObjectUtils.isEmpty(findUser)) {
             findUser = userService.findByEmail(userDTO.getUsername());
         }
         HttpHeaders headers = new HttpHeaders();
@@ -49,8 +53,14 @@ public class UserController {
         if (findUser != null && findUser.getPassword().equals(userDTO.getPassword())) {
             headers.add("Header", "OK");
             UserDTO response = userService.getBasicDataUserDTO(findUser);
-            return new ResponseEntity<>(response, headers, HttpStatus.OK);
+
+            String token = JwtService.generateToken(response.getUsername());
+
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("token", token);
+            return new ResponseEntity<>(responseBody, headers, HttpStatus.OK);
         }
+
         headers.add("Header", "FAIL");
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }

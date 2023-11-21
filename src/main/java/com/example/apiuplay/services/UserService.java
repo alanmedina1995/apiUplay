@@ -11,6 +11,8 @@ import com.example.apiuplay.repository.QuestionXUserRepository;
 import com.example.apiuplay.repository.UserRepository;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,7 +46,7 @@ public class UserService {
 
         User saveUser = new User();
         saveUser.setId(user.getId());
-        saveUser.setUserName(ObjectUtils.isNotEmpty(userDTO.getUsername()) ? userDTO.getUsername() : user.getUserName());
+        saveUser.setUserName(ObjectUtils.isNotEmpty(userDTO.getUsername()) ? userDTO.getUsername() : user.getUsername());
         saveUser.setEmail(ObjectUtils.isNotEmpty(userDTO.getEmail()) ? userDTO.getEmail() : user.getEmail());
         saveUser.setPassword(ObjectUtils.isNotEmpty(userDTO.getPassword()) ? userDTO.getPassword() : user.getPassword());
         saveUser.setName(ObjectUtils.isNotEmpty(userDTO.getName()) ? userDTO.getName() : user.getName());
@@ -58,7 +60,7 @@ public class UserService {
     public UserDTO getBasicDataUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUserName());
+        userDTO.setUsername(user.getUsername());
         userDTO.setName(user.getName());
         userDTO.setLastname(user.getLastName());
         userDTO.setUtncoin(user.getUtnCoin());
@@ -68,7 +70,7 @@ public class UserService {
     public UserDTO getFullDataUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUserName());
+        userDTO.setUsername(user.getUsername());
         userDTO.setEmail(user.getEmail());
         userDTO.setName(user.getName());
         userDTO.setLastname(user.getLastName());
@@ -111,6 +113,19 @@ public class UserService {
     public int getCoinBalance(Long userId) {
         User user = userRepository.findById(userId).orElse(null);
         return (user != null) ? user.getUtnCoin() : -1;
+    }
+
+
+
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUserName(username);
+
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+
+        return user;
     }
 
 }
