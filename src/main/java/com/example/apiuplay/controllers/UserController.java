@@ -1,12 +1,14 @@
 package com.example.apiuplay.controllers;
 
-import com.example.apiuplay.services.JwtService;
 import com.example.apiuplay.models.entities.User;
-import com.example.apiuplay.models.views.UserModifyPasswordDTO;
 import com.example.apiuplay.models.views.UserDTO;
+import com.example.apiuplay.models.views.UserModifyPasswordDTO;
 import com.example.apiuplay.models.views.UserRegistrationDTO;
+import com.example.apiuplay.services.JwtService;
 import com.example.apiuplay.services.ResendService;
 import com.example.apiuplay.services.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +44,8 @@ public class UserController {
         return new ResponseEntity<>(userResponse, headers, HttpStatus.OK);
     }
 
+
+
     @PostMapping(value = "/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody UserDTO userDTO) {
         User findUser = userService.findByUsername(userDTO.getUsername());
@@ -52,12 +56,23 @@ public class UserController {
 
         if (findUser != null && findUser.getPassword().equals(userDTO.getPassword())) {
             headers.add("Header", "OK");
-            UserDTO response = userService.getBasicDataUserDTO(findUser);
+            UserDTO responseDTO = userService.getBasicDataUserDTO(findUser);
 
-            String token = JwtService.generateToken(response.getUsername());
+            String token = JwtService.generateToken(responseDTO.getUsername());
 
             Map<String, String> responseBody = new HashMap<>();
             responseBody.put("token", token);
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                String userData = objectMapper.writeValueAsString(responseDTO);
+                responseBody.put("userData", userData);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                headers.add("Header", "FAIL");
+                return new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
             return new ResponseEntity<>(responseBody, headers, HttpStatus.OK);
         }
 

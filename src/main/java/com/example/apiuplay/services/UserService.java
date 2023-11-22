@@ -116,8 +116,6 @@ public class UserService {
     }
 
 
-
-
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUserName(username);
 
