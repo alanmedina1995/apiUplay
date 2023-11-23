@@ -162,6 +162,7 @@ public class UserController {
         User existingUser = userService.findByEmail(userModifyPasswordDTO.getEmail());
         if (ObjectUtils.isNotEmpty(existingUser)) {
             User updatedUser = userService.modifyPassword(userModifyPasswordDTO, existingUser);
+            this.resendService.sendMailModifyPassword(updatedUser.getName());
             return getUserDTOResponseEntity(headers, updatedUser);
         } else {
             headers.add("Header", "FAIL");
