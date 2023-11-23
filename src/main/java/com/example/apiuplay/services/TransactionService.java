@@ -7,6 +7,7 @@ import com.example.apiuplay.repository.TransactionRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,16 +20,19 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
-    public void createTransaction(User user, double amount, double currentDollarBlueValue, double currentCryptoValue) {
+    public void createTransaction(User user, double amount, double currentDollarBlueValue, double currentCryptoValue, String cryptocurrency, double cryptoAmount) {
         Transaction transaction = new Transaction();
         transaction.setUser(user);
         transaction.setAmount(amount);
         transaction.setCurrentDollarBlueValue(currentDollarBlueValue);
         transaction.setCurrentCryptoValue(currentCryptoValue);
-
+        transaction.setTransactionDate(LocalDateTime.now());
+        transaction.setCryptocurrency(cryptocurrency);
+        transaction.setCryptoAmount(cryptoAmount);
 
         transactionRepository.save(transaction);
     }
+
 
     public List<TransactionDTO> getUserTransactions(Long userId) {
         List<Transaction> transactions = transactionRepository.findByUserId(userId);

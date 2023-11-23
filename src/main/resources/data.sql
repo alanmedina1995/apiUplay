@@ -43,6 +43,19 @@ CREATE TABLE IF NOT EXISTS wallets
     ethereum_amount DOUBLE
 );
 
+CREATE TABLE IF NOT EXISTS transactions
+(
+    id                      INT AUTO_INCREMENT PRIMARY KEY,
+    user_id                 INT NOT NULL,
+    transaction_date        TIMESTAMP NOT NULL,
+    utn_amount                  DOUBLE NOT NULL,
+    cryptocurrency VARCHAR(50) NOT NULL,
+    crypto_amount                  DOUBLE NOT NULL,
+    current_dollar_blue_value DOUBLE NOT NULL,
+    current_crypto_value    DOUBLE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id)
+    );
+
 INSERT INTO coins (description, last_value, last_update)
 VALUES ('utncoin', 5000.0, NOW()),
        ('bitcoin', 60000.0, NOW()),
@@ -115,7 +128,7 @@ VALUES (1, 1, 'Rex'),
 
 INSERT INTO wallets (user_id, utncoin_amount, bitcoin_amount, monero_amount, ethereum_amount)
 VALUES (1, 50, 0, 0, 0),
-       (2, 50, 0, 0, 0),
+       (2, 50000, 0, 0, 0),
        (3, 50, 0, 0, 0),
        (4, 50, 0, 0, 0),
        (5, 50, 0, 0, 0),

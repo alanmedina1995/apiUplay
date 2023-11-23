@@ -163,7 +163,7 @@ public class UserController {
 
             if (exchangeSuccess) {
                 transactionService.createTransaction(user, exchangeRequest.getAmount(),
-                        currentDollarBlueValue, currentCryptoValue);
+                        currentDollarBlueValue, currentCryptoValue, exchangeRequest.getCryptocurrency(), exchangeRequest.getCryptoAmount());
 
                 return ResponseEntity.ok("Coin exchange successful");
             } else {

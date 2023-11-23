@@ -1,11 +1,16 @@
 package com.example.apiuplay.models.views;
 
+import lombok.Getter;
+
 public class ExchangeRequest {
     private Long userId;
     private double amount;
     private double currentDollarBlueValue;
     private double currentCryptoValue;
+    @Getter
     private String cryptocurrency;
+
+    private double cryptoAmount;
 
     public Long getUserId() {
         return userId;
@@ -39,11 +44,15 @@ public class ExchangeRequest {
         this.currentCryptoValue = currentCryptoValue;
     }
 
-    public String getCryptocurrency() {
-        return cryptocurrency;
-    }
-
     public void setCryptocurrency(String cryptocurrency) {
         this.cryptocurrency = cryptocurrency;
+    }
+
+    public double getCryptoAmount() {
+        return cryptoAmount;
+    }
+
+    public void setCryptoAmount(double cryptoAmount) {
+        this.cryptoAmount = cryptoAmount;
     }
 }
