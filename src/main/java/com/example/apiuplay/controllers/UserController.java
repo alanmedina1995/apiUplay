@@ -136,6 +136,18 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         User existingUser = userService.findById(id);
         if (existingUser != null) {
+            User existsUserName = userService.findByUsername(updatedUser.getUsername());
+            User existsEmail = userService.findByEmail(updatedUser.getEmail());
+            boolean sameUsername = existingUser.getUsername().equals(updatedUser.getUsername());
+            boolean sameEmail = existingUser.getEmail().equals(updatedUser.getEmail());
+            if(Boolean.FALSE.equals(sameUsername) && ObjectUtils.isNotEmpty(existsUserName)){
+                headers.add("Header", "FAIL");
+                return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
+            }
+            if(Boolean.FALSE.equals(sameEmail) && ObjectUtils.isNotEmpty(existsEmail)){
+                headers.add("Header", "FAIL");
+                return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
+            }
             User savedUser = userService.saveUser(updatedUser, existingUser);
             return getUserDTOResponseEntity(headers, savedUser);
         } else {
@@ -204,6 +216,19 @@ public class UserController {
     public ResponseEntity<List<TransactionDTO>> getUserTransactions(@PathVariable Long userId) {
         List<TransactionDTO> transactions = transactionService.getUserTransactions(userId);
         return ResponseEntity.ok(transactions);
+    }
+
+    @GetMapping("/data/{userId}")
+    public ResponseEntity<UserDTO> getUserInfo(@PathVariable Long userId){
+        HttpHeaders headers = new HttpHeaders();
+        User user = userService.findById(userId);
+        if(ObjectUtils.isNotEmpty(user)){
+            UserDTO userResponse = userService.getFullDataUserDTO(user);
+            headers.add("Header", "OK");
+            return new ResponseEntity<>(userResponse, headers, HttpStatus.OK);
+        }
+        headers.add("Header", "FAIL");
+        return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/wallet/{userId}")

@@ -82,7 +82,6 @@ public class UserService {
         userDTO.setName(user.getName());
         userDTO.setLastname(user.getLastName());
         userDTO.setPhonenumber(user.getPhoneNumber());
-        userDTO.setUtncoin(wallet.getUtncoinAmount());
 
         return userDTO;
     }
