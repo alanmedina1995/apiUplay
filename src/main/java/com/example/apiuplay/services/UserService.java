@@ -13,6 +13,8 @@ import com.example.apiuplay.repository.UserRepository;
 import com.example.apiuplay.repository.WalletRepository;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -47,7 +49,7 @@ public class UserService {
 
         User saveUser = new User();
         saveUser.setId(user.getId());
-        saveUser.setUserName(ObjectUtils.isNotEmpty(userDTO.getUsername()) ? userDTO.getUsername() : user.getUserName());
+        saveUser.setUserName(ObjectUtils.isNotEmpty(userDTO.getUsername()) ? userDTO.getUsername() : user.getUsername());
         saveUser.setEmail(ObjectUtils.isNotEmpty(userDTO.getEmail()) ? userDTO.getEmail() : user.getEmail());
         saveUser.setPassword(ObjectUtils.isNotEmpty(userDTO.getPassword()) ? userDTO.getPassword() : user.getPassword());
         saveUser.setName(ObjectUtils.isNotEmpty(userDTO.getName()) ? userDTO.getName() : user.getName());
@@ -63,7 +65,7 @@ public class UserService {
 
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUserName());
+        userDTO.setUsername(user.getUsername());
         userDTO.setName(user.getName());
         userDTO.setLastname(user.getLastName());
         userDTO.setUtncoin(wallet.getUtncoinAmount());
@@ -77,7 +79,7 @@ public class UserService {
 
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUserName());
+        userDTO.setUsername(user.getUsername());
         userDTO.setEmail(user.getEmail());
         userDTO.setName(user.getName());
         userDTO.setLastname(user.getLastName());
@@ -131,6 +133,19 @@ public class UserService {
         return -1;
     }
 
+
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUserName(username);
+
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+
+        return user;
+    }
+
+
     public boolean exchangeCoins(Long userId, double amount, String crypto) {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
@@ -151,4 +166,5 @@ public class UserService {
         }
         return false;
     }
+
 }

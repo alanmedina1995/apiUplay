@@ -1,10 +1,19 @@
 package com.example.apiuplay.controllers;
 
 import com.example.apiuplay.models.entities.User;
+
+import com.example.apiuplay.models.views.UserDTO;
+import com.example.apiuplay.models.views.UserModifyPasswordDTO;
+import com.example.apiuplay.models.views.UserRegistrationDTO;
+import com.example.apiuplay.services.JwtService;
+
 import com.example.apiuplay.models.views.*;
+
 import com.example.apiuplay.services.ResendService;
 import com.example.apiuplay.services.TransactionService;
 import com.example.apiuplay.services.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
@@ -12,7 +21,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.HashMap;
+import java.util.Map;
+
 import java.util.List;
+
 
 @RestController
 @RequestMapping(value = "/api/users")
@@ -56,8 +70,10 @@ public class UserController {
         }
     }
 
+
+
     @PostMapping(value = "/login")
-    public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody UserDTO userDTO) {
         User findUser = userService.findByUsername(userDTO.getUsername());
         if (ObjectUtils.isEmpty(findUser)) {
             findUser = userService.findByEmail(userDTO.getUsername());
@@ -67,9 +83,26 @@ public class UserController {
         if (findUser != null && findUser.getPassword().equals(userDTO.getPassword())) {
 
             headers.add("Header", "OK");
-            UserDTO response = userService.getBasicDataUserDTO(findUser);
-            return new ResponseEntity<>(response, headers, HttpStatus.OK);
+            UserDTO responseDTO = userService.getBasicDataUserDTO(findUser);
+
+            String token = JwtService.generateToken(responseDTO.getUsername());
+
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("token", token);
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                String userData = objectMapper.writeValueAsString(responseDTO);
+                responseBody.put("userData", userData);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                headers.add("Header", "FAIL");
+                return new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            return new ResponseEntity<>(responseBody, headers, HttpStatus.OK);
         }
+
         headers.add("Header", "FAIL");
         return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
