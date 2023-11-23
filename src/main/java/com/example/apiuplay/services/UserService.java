@@ -39,7 +39,7 @@ public class UserService {
         User existsUser = userRepository.save(saveUser);
         Question selectedQuestion = questionRepository.findById(userRegistrationDTO.getQuestionId()).orElse(null);
         QuestionXUser saveQuestionXUser = questionXUserRepository.save(new QuestionXUser(existsUser, selectedQuestion, userRegistrationDTO.getAnswer()));
-        Wallet wallet = walletRepository.save(new Wallet(existsUser, 50.0, 0.0, 0.0, 0.0));
+        Wallet wallet = walletRepository.save(new Wallet(existsUser, 5000.0, 0.0, 0.0, 0.0));
         return saveUser;
     }
 

@@ -18,7 +18,7 @@ public class ResendService {
                 .subject("¡Bienvenido a Uplay!")
                 .html("<p>¡Hola " + name + "!," +
                         "<br/><br/>Bienvenido a Uplay, tu destino para información cripto en tiempo real y una plataforma de juegos emocionantes diseñada para ayudarte a aumentar tu capital!" +
-                        "<br/><br/>Nos emociona tenerte como parte de nuestra comunidad. Al registrarte, has recibido un generoso bono de 50 UTN Coin, una moneda interna que puedes utilizar para explorar nuestra plataforma, jugar y aumentar tus fondos." +
+                        "<br/><br/>Nos emociona tenerte como parte de nuestra comunidad. Al registrarte, has recibido un generoso bono de 50000 UTN Coin, una moneda interna que puedes utilizar para explorar nuestra plataforma, jugar y aumentar tus fondos." +
                         "<br/><br/>En Uplay, te ofrecemos herramientas y recursos actualizados para tomar decisiones informadas en el mundo de las criptomonedas, y también la diversión y emoción de nuestros juegos, donde puedes ganar aún más capital." +
                         "<br/><br/>Estamos comprometidos a proporcionarte una experiencia única y valiosa en Uplay. Aprovecha al máximo nuestros recursos, interactúa con nuestra comunidad y disfruta de tu viaje hacia el éxito financiero." +
                         "<br/><br/>¡Estamos encantados de tener tu presencia en Uplay!" +

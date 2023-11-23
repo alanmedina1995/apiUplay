@@ -45,16 +45,16 @@ CREATE TABLE IF NOT EXISTS wallets
 
 CREATE TABLE IF NOT EXISTS transactions
 (
-    id                      INT AUTO_INCREMENT PRIMARY KEY,
-    user_id                 INT NOT NULL,
-    transaction_date        TIMESTAMP NOT NULL,
-    utn_amount                  DOUBLE NOT NULL,
-    cryptocurrency VARCHAR(50) NOT NULL,
-    crypto_amount                  DOUBLE NOT NULL,
-    current_dollar_blue_value DOUBLE NOT NULL,
-    current_crypto_value    DOUBLE NOT NULL,
+    id                        INT AUTO_INCREMENT PRIMARY KEY,
+    user_id                   INT         NOT NULL,
+    transaction_date          TIMESTAMP   NOT NULL,
+    utn_amount                DOUBLE      NOT NULL,
+    cryptocurrency            VARCHAR(50) NOT NULL,
+    crypto_amount             DOUBLE      NOT NULL,
+    current_dollar_blue_value DOUBLE      NOT NULL,
+    current_crypto_value      DOUBLE      NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id)
-    );
+);
 
 INSERT INTO coins (description, last_value, last_update)
 VALUES ('utncoin', 5000.0, NOW()),
@@ -127,23 +127,23 @@ VALUES (1, 1, 'Rex'),
        (20, 10, 'París');
 
 INSERT INTO wallets (user_id, utncoin_amount, bitcoin_amount, monero_amount, ethereum_amount)
-VALUES (1, 50, 0, 0, 0),
-       (2, 50000, 0, 0, 0),
-       (3, 50, 0, 0, 0),
-       (4, 50, 0, 0, 0),
-       (5, 50, 0, 0, 0),
-       (6, 50, 0, 0, 0),
-       (7, 50, 0, 0, 0),
-       (8, 50, 0, 0, 0),
-       (9, 50, 0, 0, 0),
-       (10, 50, 0, 0, 0),
-       (11, 50, 0, 0, 0),
-       (12, 50, 0, 0, 0),
-       (13, 50, 0, 0, 0),
-       (14, 50, 0, 0, 0),
-       (15, 50, 0, 0, 0),
-       (16, 50, 0, 0, 0),
-       (17, 50, 0, 0, 0),
-       (18, 50, 0, 0, 0),
-       (19, 50, 0, 0, 0),
-       (20, 50, 0, 0, 0);
+VALUES (1, 500000, 0, 0, 0),
+       (2, 500000, 0, 0, 0),
+       (3, 50000, 0, 0, 0),
+       (4, 50000, 0, 0, 0),
+       (5, 50000, 0, 0, 0),
+       (6, 50000, 0, 0, 0),
+       (7, 50000, 0, 0, 0),
+       (8, 50000, 0, 0, 0),
+       (9, 50000, 0, 0, 0),
+       (10, 50000, 0, 0, 0),
+       (11, 50000, 0, 0, 0),
+       (12, 50000, 0, 0, 0),
+       (13, 50000, 0, 0, 0),
+       (14, 50000, 0, 0, 0),
+       (15, 50000, 0, 0, 0),
+       (16, 50000, 0, 0, 0),
+       (17, 50000, 0, 0, 0),
+       (18, 50000, 0, 0, 0),
+       (19, 50000, 0, 0, 0),
+       (20, 50000, 0, 0, 0);
