@@ -113,6 +113,7 @@ public class UserService {
             Wallet wallet = walletRepository.findByUserId(userId);
             if(ObjectUtils.isNotEmpty(wallet)){
                 wallet.setUtncoinAmount(newCoinBalance);
+                Wallet walletUpdate = walletRepository.save(wallet);
                 return true;
             }
         }
