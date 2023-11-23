@@ -1,8 +1,8 @@
 package com.example.apiuplay.controllers;
 
 import com.example.apiuplay.models.entities.User;
-import com.example.apiuplay.models.views.UserModifyPasswordDTO;
 import com.example.apiuplay.models.views.UserDTO;
+import com.example.apiuplay.models.views.UserModifyPasswordDTO;
 import com.example.apiuplay.models.views.UserRegistrationDTO;
 import com.example.apiuplay.services.ResendService;
 import com.example.apiuplay.services.UserService;
@@ -27,26 +27,41 @@ public class UserController {
     @PostMapping(value = "/register")
     public ResponseEntity<UserDTO> registerUser(@RequestBody UserRegistrationDTO userRegistrationDTO) {
         HttpHeaders headers = new HttpHeaders();
-        User savedUser = userService.createUser(userRegistrationDTO);// Guarda el usuario en el repositorio
-        if (savedUser == null) {
+        User existsMail = userService.findByEmail(userRegistrationDTO.getEmail());
+        if (ObjectUtils.isEmpty(existsMail)) {
+            User existsUserName = userService.findByUsername((userRegistrationDTO.getUserName()));
+            if (ObjectUtils.isEmpty(existsUserName)) {
+                User savedUser = userService.createUser(userRegistrationDTO);// Guarda el usuario en el repositorio
+                if (savedUser == null) {
+                    headers.add("Header", "FAIL");
+                    return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
+                }
+                headers.add("Header", "OK");
+                this.resendService.sendMailRegister(savedUser.getName());
+                UserDTO userResponse = userService.getBasicDataUserDTO(savedUser);
+                return new ResponseEntity<>(userResponse, headers, HttpStatus.OK);
+            } else {
+                headers.add("Header", "FAIL");
+                headers.add("Error-Message", "The userName already exists. It is not possible to create the user.");
+                return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
+            }
+        } else {
             headers.add("Header", "FAIL");
+            headers.add("Error-Message", "The email already exists. It is not possible to create the user.");
             return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
         }
-        headers.add("Header", "OK");
-        this.resendService.sendMailRegister(savedUser.getName());
-        UserDTO userResponse = userService.getBasicDataUserDTO(savedUser);
-        return new ResponseEntity<>(userResponse, headers, HttpStatus.OK);
     }
 
     @PostMapping(value = "/login")
     public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO) {
         User findUser = userService.findByUsername(userDTO.getUsername());
-        if(ObjectUtils.isEmpty(findUser)){
+        if (ObjectUtils.isEmpty(findUser)) {
             findUser = userService.findByEmail(userDTO.getUsername());
         }
         HttpHeaders headers = new HttpHeaders();
 
         if (findUser != null && findUser.getPassword().equals(userDTO.getPassword())) {
+
             headers.add("Header", "OK");
             UserDTO response = userService.getBasicDataUserDTO(findUser);
             return new ResponseEntity<>(response, headers, HttpStatus.OK);
@@ -58,12 +73,12 @@ public class UserController {
     @PutMapping(value = "/update-coin-balance/{userId}")
     public ResponseEntity<String> updateCoinBalance(
             @PathVariable Long userId,
-            @RequestParam int newCoinBalance
+            @RequestParam Double newCoinBalance
     ) {
         HttpHeaders headers = new HttpHeaders();
-        User updatedUser = userService.updateCoinBalance(userId, newCoinBalance);
+        boolean isUpdated = userService.updateCoinBalance(userId, newCoinBalance);
 
-        if (updatedUser != null) {
+        if (Boolean.TRUE.equals(isUpdated)) {
             headers.add("Header", "OK");
             return new ResponseEntity<>(headers, HttpStatus.OK);
         } else {
@@ -73,9 +88,9 @@ public class UserController {
     }
 
     @GetMapping(value = "/coin-balance/{userId}")
-    public ResponseEntity<Integer> getCoinBalance(@PathVariable Long userId) {
+    public ResponseEntity<Double> getCoinBalance(@PathVariable Long userId) {
         HttpHeaders headers = new HttpHeaders();
-        int coinBalance = userService.getCoinBalance(userId);
+        double coinBalance = userService.getCoinBalance(userId);
 
         if (coinBalance >= 0) {
             headers.add("Header", "OK");
