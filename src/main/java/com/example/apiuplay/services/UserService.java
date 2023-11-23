@@ -17,8 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
 @Service
 public class UserService {
 
@@ -150,16 +148,25 @@ public class UserService {
         if (user != null) {
             Wallet wallet = walletRepository.findByUserId(userId);
             if (ObjectUtils.isNotEmpty(wallet)) {
-                if (Objects.equals(crypto, "bitcoin")) {
-                    wallet.setBitcoinAmount(amount);
-                    walletRepository.save(wallet);
-                } else if (Objects.equals(crypto, "ethereum")) {
-                    wallet.setEthereumAmount(amount);
-                    walletRepository.save(wallet);
-                } else if (Objects.equals(crypto, "monero")) {
-                    wallet.setMoneroAmount(amount);
-                    walletRepository.save(wallet);
+                double currentAmount = 0;
+                switch (crypto) {
+                    case "bitcoin":
+                        currentAmount = wallet.getBitcoinAmount();
+                        wallet.setBitcoinAmount(currentAmount + amount);
+                        break;
+                    case "ethereum":
+                        currentAmount = wallet.getEthereumAmount();
+                        wallet.setEthereumAmount(currentAmount + amount);
+                        break;
+                    case "monero":
+                        currentAmount = wallet.getMoneroAmount();
+                        wallet.setMoneroAmount(currentAmount + amount);
+                        break;
+                    default:
+                        return false; // Unknown crypto
                 }
+
+                walletRepository.save(wallet);
                 return true;
             }
         }
