@@ -29,8 +29,8 @@ public class TransactionService {
         transaction.setTransactionDate(LocalDateTime.now());
         transaction.setCryptocurrency(cryptocurrency);
         transaction.setCryptoAmount(cryptoAmount);
-
         transactionRepository.save(transaction);
+        System.out.println("Transaction saved: " + transaction.getId());
     }
 
 
