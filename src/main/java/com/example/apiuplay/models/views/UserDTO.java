@@ -15,7 +15,7 @@ public class UserDTO {
     private String name;
     private String lastname;
     private String phonenumber;
-    private int utncoin;
+    private Double utncoin;
 
     public UserDTO() {
 

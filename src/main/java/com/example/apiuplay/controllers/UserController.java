@@ -1,11 +1,16 @@
 package com.example.apiuplay.controllers;
 
 import com.example.apiuplay.models.entities.User;
+
 import com.example.apiuplay.models.views.UserDTO;
 import com.example.apiuplay.models.views.UserModifyPasswordDTO;
 import com.example.apiuplay.models.views.UserRegistrationDTO;
 import com.example.apiuplay.services.JwtService;
+
+import com.example.apiuplay.models.views.*;
+
 import com.example.apiuplay.services.ResendService;
+import com.example.apiuplay.services.TransactionService;
 import com.example.apiuplay.services.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,8 +21,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.HashMap;
 import java.util.Map;
+
+import java.util.List;
+
 
 @RestController
 @RequestMapping(value = "/api/users")
@@ -26,22 +35,39 @@ public class UserController {
     private final UserService userService;
     private final ResendService resendService = new ResendService();
 
-    public UserController(UserService userService) {
+    private final TransactionService transactionService;
+
+    public UserController(UserService userService, TransactionService transactionService) {
         this.userService = userService;
+        this.transactionService = transactionService;
     }
 
     @PostMapping(value = "/register")
     public ResponseEntity<UserDTO> registerUser(@RequestBody UserRegistrationDTO userRegistrationDTO) {
         HttpHeaders headers = new HttpHeaders();
-        User savedUser = userService.createUser(userRegistrationDTO);// Guarda el usuario en el repositorio
-        if (savedUser == null) {
+        User existsMail = userService.findByEmail(userRegistrationDTO.getEmail());
+        if (ObjectUtils.isEmpty(existsMail)) {
+            User existsUserName = userService.findByUsername((userRegistrationDTO.getUserName()));
+            if (ObjectUtils.isEmpty(existsUserName)) {
+                User savedUser = userService.createUser(userRegistrationDTO);// Guarda el usuario en el repositorio
+                if (savedUser == null) {
+                    headers.add("Header", "FAIL");
+                    return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
+                }
+                headers.add("Header", "OK");
+                this.resendService.sendMailRegister(savedUser.getName());
+                UserDTO userResponse = userService.getBasicDataUserDTO(savedUser);
+                return new ResponseEntity<>(userResponse, headers, HttpStatus.OK);
+            } else {
+                headers.add("Header", "FAIL");
+                headers.add("Error-Message", "The userName already exists. It is not possible to create the user.");
+                return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
+            }
+        } else {
             headers.add("Header", "FAIL");
+            headers.add("Error-Message", "The email already exists. It is not possible to create the user.");
             return new ResponseEntity<>(headers, HttpStatus.CONFLICT);
         }
-        headers.add("Header", "OK");
-        this.resendService.sendMailRegister(savedUser.getName());
-        UserDTO userResponse = userService.getBasicDataUserDTO(savedUser);
-        return new ResponseEntity<>(userResponse, headers, HttpStatus.OK);
     }
 
 
@@ -55,6 +81,7 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
 
         if (findUser != null && findUser.getPassword().equals(userDTO.getPassword())) {
+
             headers.add("Header", "OK");
             UserDTO responseDTO = userService.getBasicDataUserDTO(findUser);
 
@@ -83,12 +110,12 @@ public class UserController {
     @PutMapping(value = "/update-coin-balance/{userId}")
     public ResponseEntity<String> updateCoinBalance(
             @PathVariable Long userId,
-            @RequestParam int newCoinBalance
+            @RequestParam Double newCoinBalance
     ) {
         HttpHeaders headers = new HttpHeaders();
-        User updatedUser = userService.updateCoinBalance(userId, newCoinBalance);
+        boolean isUpdated = userService.updateCoinBalance(userId, newCoinBalance);
 
-        if (updatedUser != null) {
+        if (Boolean.TRUE.equals(isUpdated)) {
             headers.add("Header", "OK");
             return new ResponseEntity<>(headers, HttpStatus.OK);
         } else {
@@ -98,9 +125,9 @@ public class UserController {
     }
 
     @GetMapping(value = "/coin-balance/{userId}")
-    public ResponseEntity<Integer> getCoinBalance(@PathVariable Long userId) {
+    public ResponseEntity<Double> getCoinBalance(@PathVariable Long userId) {
         HttpHeaders headers = new HttpHeaders();
-        int coinBalance = userService.getCoinBalance(userId);
+        double coinBalance = userService.getCoinBalance(userId);
 
         if (coinBalance >= 0) {
             headers.add("Header", "OK");
@@ -147,6 +174,44 @@ public class UserController {
             headers.add("Header", "FAIL");
             return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
         }
+    }
+
+    @PostMapping("/exchange-coins")
+    public ResponseEntity<String> exchangeCoins(@RequestBody ExchangeRequest exchangeRequest) {
+        try {
+            User user = userService.findById(exchangeRequest.getUserId());
+
+            if (user == null) {
+                return ResponseEntity.badRequest().body("User not found");
+            }
+
+            double currentDollarBlueValue = exchangeRequest.getCurrentDollarBlueValue();
+            double currentCryptoValue = exchangeRequest.getCurrentCryptoValue();
+
+            boolean exchangeSuccess = userService.exchangeCoins(
+                    exchangeRequest.getUserId(),
+                    exchangeRequest.getAmount(),
+                    exchangeRequest.getCryptocurrency()
+            );
+
+            if (exchangeSuccess) {
+                transactionService.createTransaction(user, exchangeRequest.getAmount(),
+                        currentDollarBlueValue, currentCryptoValue, exchangeRequest.getCryptocurrency(), exchangeRequest.getCryptoAmount());
+
+                return ResponseEntity.ok("Coin exchange successful");
+            } else {
+                return ResponseEntity.badRequest().body("Coin exchange failed");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Internal server error");
+        }
+    }
+
+
+    @GetMapping("/transactions/{userId}")
+    public ResponseEntity<List<TransactionDTO>> getUserTransactions(@PathVariable Long userId) {
+        List<TransactionDTO> transactions = transactionService.getUserTransactions(userId);
+        return ResponseEntity.ok(transactions);
     }
 }
 

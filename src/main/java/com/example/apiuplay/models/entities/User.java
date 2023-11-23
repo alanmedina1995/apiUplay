@@ -27,8 +27,6 @@ public class User implements UserDetails {
     private String lastName;
     @Column(name = "phone_number")
     private String phoneNumber;
-    @Column(name = "utn_coin")
-    private int utnCoin;
 
     public User(String userName, String email, String password,
                 String name, String lastName, String phoneNumber) {
@@ -38,7 +36,6 @@ public class User implements UserDetails {
         this.name = name;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
-        this.utnCoin = 25;
     }
 
     public User() {

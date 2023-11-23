@@ -25,6 +25,6 @@ public class QuestionService {
 
     public Question getSelectedAsk(Long userId) {
         QuestionXUser questionXUser = questionXUserRepository.findByUserId(userId);
-        return questionRepository.findById(questionXUser.getId()).orElse(null);
+        return questionRepository.findById(questionXUser.getQuestion().getId()).orElse(null);
     }
 }
