@@ -1,10 +1,9 @@
 package com.example.apiuplay.controllers;
 
 import com.example.apiuplay.models.entities.User;
-import com.example.apiuplay.models.views.UserDTO;
-import com.example.apiuplay.models.views.UserModifyPasswordDTO;
-import com.example.apiuplay.models.views.UserRegistrationDTO;
+import com.example.apiuplay.models.views.*;
 import com.example.apiuplay.services.ResendService;
+import com.example.apiuplay.services.TransactionService;
 import com.example.apiuplay.services.UserService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/api/users")
 public class UserController {
@@ -20,8 +21,11 @@ public class UserController {
     private final UserService userService;
     private final ResendService resendService = new ResendService();
 
-    public UserController(UserService userService) {
+    private final TransactionService transactionService;
+
+    public UserController(UserService userService, TransactionService transactionService) {
         this.userService = userService;
+        this.transactionService = transactionService;
     }
 
     @PostMapping(value = "/register")
@@ -137,6 +141,44 @@ public class UserController {
             headers.add("Header", "FAIL");
             return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
         }
+    }
+
+    @PostMapping("/exchange-coins")
+    public ResponseEntity<String> exchangeCoins(@RequestBody ExchangeRequest exchangeRequest) {
+        try {
+            User user = userService.findById(exchangeRequest.getUserId());
+
+            if (user == null) {
+                return ResponseEntity.badRequest().body("User not found");
+            }
+
+            double currentDollarBlueValue = exchangeRequest.getCurrentDollarBlueValue();
+            double currentCryptoValue = exchangeRequest.getCurrentCryptoValue();
+
+            boolean exchangeSuccess = userService.exchangeCoins(
+                    exchangeRequest.getUserId(),
+                    exchangeRequest.getAmount(),
+                    exchangeRequest.getCryptocurrency()
+            );
+
+            if (exchangeSuccess) {
+                transactionService.createTransaction(user, exchangeRequest.getAmount(),
+                        currentDollarBlueValue, currentCryptoValue);
+
+                return ResponseEntity.ok("Coin exchange successful");
+            } else {
+                return ResponseEntity.badRequest().body("Coin exchange failed");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Internal server error");
+        }
+    }
+
+
+    @GetMapping("/transactions/{userId}")
+    public ResponseEntity<List<TransactionDTO>> getUserTransactions(@PathVariable Long userId) {
+        List<TransactionDTO> transactions = transactionService.getUserTransactions(userId);
+        return ResponseEntity.ok(transactions);
     }
 }
 

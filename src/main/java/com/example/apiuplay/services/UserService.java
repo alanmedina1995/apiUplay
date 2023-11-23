@@ -15,6 +15,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class UserService {
 
@@ -129,4 +131,24 @@ public class UserService {
         return -1;
     }
 
+    public boolean exchangeCoins(Long userId, double amount, String crypto) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            Wallet wallet = walletRepository.findByUserId(userId);
+            if (ObjectUtils.isNotEmpty(wallet)) {
+                if(Objects.equals(crypto, "bitcoin")) {
+                    wallet.setBitcoinAmount(amount);
+                    walletRepository.save(wallet);
+                } else if (Objects.equals(crypto, "ethereum")) {
+                    wallet.setEthereumAmount(amount);
+                    walletRepository.save(wallet);
+                } else if (Objects.equals(crypto, "monero")) {
+                    wallet.setMoneroAmount(amount);
+                    walletRepository.save(wallet);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 }
