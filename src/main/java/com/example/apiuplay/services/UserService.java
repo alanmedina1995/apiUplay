@@ -115,7 +115,7 @@ public class UserService {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
             Wallet wallet = walletRepository.findByUserId(userId);
-            if(ObjectUtils.isNotEmpty(wallet)){
+            if (ObjectUtils.isNotEmpty(wallet)) {
                 wallet.setUtncoinAmount(newCoinBalance);
                 Wallet walletUpdate = walletRepository.save(wallet);
                 return true;
@@ -126,13 +126,12 @@ public class UserService {
 
     public double getCoinBalance(Long userId) {
         User user = userRepository.findById(userId).orElse(null);
-        if(ObjectUtils.isNotEmpty(user)){
+        if (ObjectUtils.isNotEmpty(user)) {
             Wallet wallet = walletRepository.findByUserId(userId);
             return ObjectUtils.isNotEmpty(wallet) ? wallet.getUtncoinAmount() : -1;
         }
         return -1;
     }
-
 
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -151,7 +150,7 @@ public class UserService {
         if (user != null) {
             Wallet wallet = walletRepository.findByUserId(userId);
             if (ObjectUtils.isNotEmpty(wallet)) {
-                if(Objects.equals(crypto, "bitcoin")) {
+                if (Objects.equals(crypto, "bitcoin")) {
                     wallet.setBitcoinAmount(amount);
                     walletRepository.save(wallet);
                 } else if (Objects.equals(crypto, "ethereum")) {
@@ -167,4 +166,11 @@ public class UserService {
         return false;
     }
 
+    public Wallet getUserWallet(Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (ObjectUtils.isNotEmpty(user)) {
+            return walletRepository.findByUserId(userId);
+        }
+        return null;
+    }
 }

@@ -40,4 +40,11 @@ public class Wallet {
         this.moneroAmount = moneroAmount;
         this.ethereumAmount = moneroAmount;
     }
+
+    public Wallet(double utncoinAmount, double bitcoinAmount, double moneroAmount, double ethereumAmount) {
+        this.utncoinAmount = utncoinAmount;
+        this.bitcoinAmount = bitcoinAmount;
+        this.moneroAmount = moneroAmount;
+        this.ethereumAmount = ethereumAmount;
+    }
 }

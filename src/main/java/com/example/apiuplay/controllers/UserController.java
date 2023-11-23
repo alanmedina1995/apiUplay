@@ -1,14 +1,9 @@
 package com.example.apiuplay.controllers;
 
 import com.example.apiuplay.models.entities.User;
-
-import com.example.apiuplay.models.views.UserDTO;
-import com.example.apiuplay.models.views.UserModifyPasswordDTO;
-import com.example.apiuplay.models.views.UserRegistrationDTO;
-import com.example.apiuplay.services.JwtService;
-
+import com.example.apiuplay.models.entities.Wallet;
 import com.example.apiuplay.models.views.*;
-
+import com.example.apiuplay.services.JwtService;
 import com.example.apiuplay.services.ResendService;
 import com.example.apiuplay.services.TransactionService;
 import com.example.apiuplay.services.UserService;
@@ -21,11 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.HashMap;
-import java.util.Map;
-
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -190,7 +183,7 @@ public class UserController {
 
             boolean exchangeSuccess = userService.exchangeCoins(
                     exchangeRequest.getUserId(),
-                    exchangeRequest.getAmount(),
+                    exchangeRequest.getCryptoAmount(),
                     exchangeRequest.getCryptocurrency()
             );
 
@@ -207,12 +200,27 @@ public class UserController {
         }
     }
 
-
     @GetMapping("/transactions/{userId}")
     public ResponseEntity<List<TransactionDTO>> getUserTransactions(@PathVariable Long userId) {
         List<TransactionDTO> transactions = transactionService.getUserTransactions(userId);
         return ResponseEntity.ok(transactions);
     }
+
+    @GetMapping("/wallet/{userId}")
+    public ResponseEntity<Wallet> getUserWallet(@PathVariable Long userId) {
+        HttpHeaders headers = new HttpHeaders();
+        Wallet userWallet = userService.getUserWallet(userId);
+
+        if (userWallet != null) {
+            headers.add("Header", "OK");
+            return new ResponseEntity<>(userWallet, headers, HttpStatus.OK);
+        } else {
+            headers.add("Header", "FAIL");
+            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 }
 
 
